@@ -28,7 +28,6 @@ with st.sidebar:
                                     "nav-link-selected": {"background-color": "#08c7b4"},
                                 })
 
-
 # 선택된 메뉴에 따라 다른 데이터 표시 ***헤더 뷰 정보***
 if selected_menu == "수학":
     st.markdown("##### 수학 데이터를 표시합니다.")
@@ -127,11 +126,14 @@ if len(selected_list) != 0:
     st.write(A_code_merge.iloc[1]['대주제'])
 
     for i in range(len(B_code_merge)):
-        nodes.append( Node(id=B_code_merge.iloc[i]['중주제'], 
-                   label=B_code_merge.iloc[i]['설명_y'], 
-                   size=30, 
-                   shape="circular",)
-            )
+        nodes.append( Node(
+            id=B_code_merge.iloc[i]['중주제'], 
+            label=B_code_merge.iloc[i]['설명_y'], 
+            size=20, 
+            shape="square",
+            color= '#fB7CE9',
+            border= '#000',
+        ))
     
     #for i in range(3):
     for i in range(len(A_code_merge)):
@@ -140,8 +142,9 @@ if len(selected_list) != 0:
         node_label = A_code_merge.iloc[i]['설명']
         nodes.append( Node(id=node_id, 
                    label=node_label, 
-                   size=40, 
-                   shape="circular",)
+                   size=30, 
+                   shape="dot",
+                   font={'color': 'red'},)
 
             ) # includes **kwargs
         
@@ -155,7 +158,14 @@ if len(selected_list) != 0:
                     # **kwargs
                     ) 
              ) 
-
+    for i in range(len(A_code_merge)-1):
+                
+        edges.append( Edge(source=A_code_merge.iloc[i]['대주제'], 
+            #label="friend_of",
+            target=A_code_merge.iloc[i+1]['대주제'], 
+            # **kwargs
+            ) 
+        )
 
         
         
@@ -164,8 +174,8 @@ if len(selected_list) != 0:
                     height=1500,
                     directed=True, 
                     physics=True, 
-                    hierarchical=True,
-                    # **kwargs
+                    #hierarchical=True,
+                    color="#eeeeee",
                     )
 
     # graph 를 그리면 끝!

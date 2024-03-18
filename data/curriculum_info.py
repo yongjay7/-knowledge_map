@@ -11,8 +11,10 @@ SHEET_S = '소주제(C)'
 def get_data_math(sheet):
     SHEET_CODE = '최종 코딩 양식'
     file_name = './data/math_code_2022.xlsx'
+    
+    print(sheet)
     if sheet == 0:
-        data = pd.read_excel(file_name, sheet_name=SHEET_CODE)
+        data = pd.read_excel(file_name, dtype='object', sheet_name=SHEET_CODE)
     elif sheet == 'A':
         data = pd.read_excel(file_name, sheet_name=SHEET_L)
     elif sheet == 'B':
