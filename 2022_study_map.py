@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import streamlit as st
 from streamlit_option_menu import option_menu
 
@@ -101,65 +102,106 @@ if len(selected_list) != 0:
         # 선택한 학교급 및 학년 정보에 해당하는 데이터를 가져옵니다. 
         select_grade_df = main_df[(main_df['학교급'] == school_data_info[school_lv_choice]) & (main_df['학년'] == int(selected_list[i][:1]))]
 
-        # 주제에 대한 설명 데이터를 가져오기 위해 select_grade_df의 각 코드를 연결하는 작업을 진행합니다. 
+        #""" 선택한 학년의 대주제(A) 코드 및 코드 설명 데이터 생성 과정 start """
+        # 대주제 sheet와 매핑 가능한 데이터를 생성하는 과정
+        # select_grade_df 에서 학교급(E)+학년(4)+교과(MATH)+대주제(A03) 스트링 데이터를 합하여 A_code를 생성
+        # A_code = 'E4MATHA03' 
         select_grade_df['A_code'] = select_grade_df['학교급'].map(str)+select_grade_df['학년'].map(str)+select_grade_df['교과'].map(str)+select_grade_df['대주제'].map(str)
 
-        # 연결 작업 후 대주제만을 확인하기 위해 대주제 고유값만 추출하는 과정을 진행합니다. 
+        # 생성한 A_code의 중복된 데이터를 제거하는 과정
+        # A_code_unique = A_code 고유값
         A_code_unique = pd.DataFrame(select_grade_df['A_code'].unique(), columns=['대주제'])
         
-        # 대주제의 설명이 있는 side_df_A 병합하여 학교급 및 학년에 해당하는 정보를 확인할 수 있는 데이터를 생성합니다. 
+        # A_code_unique와 side_df_A(대주제 sheet)를 merge하는 과정 
+        # A_code_merge = 대주제 코드, 대주제 코드 설명 구조
         A_code_merge = pd.merge(A_code_unique,  side_df_A, on="대주제", how='left') 
-        
+        #""" 선택한 학년의 대주제(A) 코드 및 코드 설명 데이터 생성 과정 end """
 
+
+        #""" 선택한 학년의 중주제(B) 코드 및 코드 설명 데이터 생성 과정 start """
+        # 대주제(A) sheet와 중주제(B) sheet의 매핑 가능한 데이터를 생성하는 과정
+        # 'E4MATHA03B01' → 'E4MATHA03' 
+        # side_df_B['대주제'] = 'E4MATHA03'         
         side_df_B['대주제'] = side_df_B['중주제'].str.slice(start=0, stop=8)
+        
+        # A_code_merge(대주제 코드)와 side_df_B(중주제 코드)를 merge하는 과정 
+        # B_code_merge = 대주제 코드, 대주제 코드 설명, 
+        #                중주제 코드, 중주제 코드 설명 구조      
         B_code_merge = pd.merge(A_code_merge,  side_df_B, on="대주제", how='left') 
-        st.write(B_code_merge)
-        #B_code_merge = pd.merge(A_code_merge,  side_df_B, on="대주제", how='left') 
+        #st.write(B_code_merge)
+        #""" 선택한 학년의 중주제(B) 코드 및 코드 설명 데이터 생성 과정 end """
 
-        with mid_layout[i]: 
-            st.dataframe(select_grade_df.head())
-            for j in range(len(A_code_merge)):
-                st.button(A_code_merge['설명'].iloc[j])
-
+        #""" 선택한 학년의 소주제(C) 코드 및 코드 설명 데이터 생성 과정 start """        
+        side_df_C['중주제'] = side_df_C['소주제'].str.slice(start=0, stop=11)
+        C_code_merge = pd.merge(B_code_merge,  side_df_C, on="중주제", how='left') 
+        #""" 선택한 학년의 소주제(C) 코드 및 코드 설명 데이터 생성 과정 end """
+        
+        # with mid_layout[i]: 
+        #     st.dataframe(select_grade_df.head())
+        #     for j in range(len(A_code_merge)):
+        #         st.button(A_code_merge['설명'].iloc[j])
+        st.write(C_code_merge)
     nodes = []
     edges = []
-    st.write(A_code_merge.iloc[1]['대주제'])
+    
+    C_code_merge_drop = C_code_merge.dropna(axis=0)
+    for i in range(len(C_code_merge_drop)):
+        
+        node_id = C_code_merge_drop.iloc[i]['소주제']
+        node_label = C_code_merge_drop.iloc[i]['설명']    
 
+        nodes.append(Node(
+            id=node_id, 
+            label=node_label, 
+            size=10, 
+            shape="dot",
+            color= '#eee',
+            border= '#000',
+        ))
+    st.write(C_code_merge_drop)
+    st.write(B_code_merge)
+    st.write(A_code_merge)
     for i in range(len(B_code_merge)):
-        nodes.append( Node(
-            id=B_code_merge.iloc[i]['중주제'], 
-            label=B_code_merge.iloc[i]['설명_y'], 
-            size=20, 
+        node_id = B_code_merge.iloc[i]['중주제']
+        node_label = B_code_merge.iloc[i]['설명_y']        
+        nodes.append(Node(
+            id=node_id, 
+            label=node_label, 
+            size=15, 
             shape="square",
             color= '#fB7CE9',
             border= '#000',
         ))
-    
-    #for i in range(3):
+        C_node = C_code_merge_drop[C_code_merge_drop['중주제'] == node_id]
+        for j in range(len(C_node)):
+            if isinstance(C_node.iloc[j]['소주제'], type(None)):
+                continue
+            edges.append(Edge(source=C_node.iloc[j]['중주제'], 
+                #label="friend_of", 
+                target=C_node.iloc[j]['소주제'], 
+                # **kwargs
+            )) 
+                      
     for i in range(len(A_code_merge)):
 
         node_id = A_code_merge.iloc[i]['대주제']
         node_label = A_code_merge.iloc[i]['설명']
-        nodes.append( Node(id=node_id, 
+        nodes.append(Node(id=node_id, 
                    label=node_label, 
                    size=30, 
                    shape="dot",
-                   font={'color': 'red'},)
-
-            ) # includes **kwargs
+                   font={'color': 'red'},
+        )) 
         
         B_node = B_code_merge[B_code_merge['대주제'] == node_id]
-
         for j in range(len(B_node)):
-                
-                edges.append( Edge(source=B_node.iloc[j]['대주제'], 
+                edges.append(Edge(source=B_node.iloc[j]['대주제'], 
                     #label="friend_of", 
                     target=B_node.iloc[j]['중주제'], 
                     # **kwargs
-                    ) 
-             ) 
-    for i in range(len(A_code_merge)-1):
-                
+                )) 
+             
+    for i in range(len(A_code_merge)-1):                
         edges.append( Edge(source=A_code_merge.iloc[i]['대주제'], 
             #label="friend_of",
             target=A_code_merge.iloc[i+1]['대주제'], 
