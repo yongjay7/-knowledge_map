@@ -15,6 +15,11 @@ side_df_B = pd.DataFrame() # 중주제 정보
 side_df_C = pd.DataFrame() # 소주제 정보
 side_df_D = pd.DataFrame() # 성취기준 정보
 
+
+# 노드 클릭 콜백 함수
+def on_node_click(event):
+    if event["type"] == "Node":
+        selected_node.write(f"You clicked node {event['data']['id']}")
 ## 사이드바 코드 시작 ##
 # 메뉴 항목 생성
 with st.sidebar:
@@ -36,6 +41,7 @@ if selected_menu == "수학":
     side_df_A = curri_info.get_data_math('A')
     side_df_B = curri_info.get_data_math('B')
     side_df_C = curri_info.get_data_math('C')
+    #side_df_D= 
 
     label_text = "수학과목 코드 정보"
     with st.expander(label=label_text, expanded=True):
@@ -140,7 +146,6 @@ if len(selected_list) != 0:
         #     st.dataframe(select_grade_df.head())
         #     for j in range(len(A_code_merge)):
         #         st.button(A_code_merge['설명'].iloc[j])
-        st.write(C_code_merge)
     nodes = []
     edges = []
     
@@ -158,9 +163,9 @@ if len(selected_list) != 0:
             color= '#eee',
             border= '#000',
         ))
-    st.write(C_code_merge_drop)
-    st.write(B_code_merge)
-    st.write(A_code_merge)
+    # st.write(C_code_merge_drop)
+    # st.write(B_code_merge)
+    # st.write(A_code_merge)
     for i in range(len(B_code_merge)):
         node_id = B_code_merge.iloc[i]['중주제']
         node_label = B_code_merge.iloc[i]['설명_y']        
@@ -210,7 +215,6 @@ if len(selected_list) != 0:
         )
 
         
-        
     # config 와 함께
     config = Config(width=1400,
                     height=1500,
@@ -221,11 +225,46 @@ if len(selected_list) != 0:
                     )
 
     # graph 를 그리면 끝!
-    return_value = agraph(nodes=nodes, 
-                        edges=edges, 
-                        config=config)
 
+
+
+    graph_col1, graph_col2 = st.columns([2, 1])
+    with graph_col1:    
+        graph = agraph(nodes=nodes, 
+                            edges=edges, 
+                            config=config)
+    
+    with graph_col2: 
+        st.write(graph)
+        st.write(side_df_D)
 else :
     st.text('')    
+
+
+
+
+
+# import streamlit as st
+# from streamlit_agraph import agraph, Node, Config
+
+# # 그래프 데이터 생성
+# nodes = [
+#     Node(id='A1', size=100),
+#     Node(id='B1', size=200),
+#     Node(id='C1', size=300)
+# ]
+
+# edges = []
+# config = Config(width=1400,
+#                 height=1500,
+#                 directed=True, 
+#                 physics=True, 
+#                 #hierarchical=True,
+#                 color="#eeeeee",
+#                 )
+# # 그래프 출력
+
+# graph = agraph(nodes, edges, config)
+# st.write(graph)
 
 
