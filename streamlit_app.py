@@ -15,11 +15,34 @@ side_df_B = pd.DataFrame() # 중주제 정보
 side_df_C = pd.DataFrame() # 소주제 정보
 side_df_D = pd.DataFrame() # 성취기준 정보
 
+def get_learning_separate_data(data, value, div):
+    result_df = pd.DataFrame()
+    DIV_COL = 'ID'
+    if div == 'A':
+        result_df = data[data[DIV_COL].str.slice(start=0, stop=8) == value]
+    elif div == 'B':
+        result_df = data[data[DIV_COL].str.slice(start=0, stop=11) == value]
+    elif div == 'C':
+        result_df = data[data[DIV_COL] == value]        
+    
+    return result_df
 
-# 노드 클릭 콜백 함수
-def on_node_click(event):
-    if event["type"] == "Node":
-        selected_node.write(f"You clicked node {event['data']['id']}")
+def show_achieve_standards_info(data, achieve_data):
+    ACH_STANDARD_COL = ['ID', 'A_성취기준', 'B_성취기준', 'C_성취기준']
+    ACH_STANDARD_COL_NAME = ['성취기준']
+    
+    pre_df = pd.DataFrame(data[ACH_STANDARD_COL].dropna(axis=1).iloc[:, 1].unique(), columns=ACH_STANDARD_COL_NAME)
+    pre_df['성취기준'] = pre_df['성취기준'].str.strip()
+
+    MERGE_COL = '성취기준'
+    pre_ach_merge = pd.merge(pre_df, achieve_data, on=MERGE_COL)
+
+    for ach_i in range(len(pre_ach_merge)):
+        #st.write(ach_std_merge.iloc[ach_i]['성취기준'])
+        st.markdown("###### "+pre_ach_merge.iloc[ach_i]['성취기준'])
+        st.write(pre_ach_merge.iloc[ach_i]['설명'])
+        st.write("")   
+
 ## 사이드바 코드 시작 ##
 # 메뉴 항목 생성
 with st.sidebar:
@@ -34,14 +57,16 @@ with st.sidebar:
                                     "nav-link-selected": {"background-color": "#08c7b4"},
                                 })
 
+
 # 선택된 메뉴에 따라 다른 데이터 표시 ***헤더 뷰 정보***
 if selected_menu == "수학":
+
     st.markdown("##### 수학 데이터를 표시합니다.")
     main_df = curri_info.get_data_math(0)
     side_df_A = curri_info.get_data_math('A')
     side_df_B = curri_info.get_data_math('B')
     side_df_C = curri_info.get_data_math('C')
-    #side_df_D= 
+    side_df_D = curri_info.get_data_math('ACH')
 
     label_text = "수학과목 코드 정보"
     with st.expander(label=label_text, expanded=True):
@@ -70,12 +95,14 @@ st.markdown("##### 학교급, 학년도별 주제를 확인합니다.")
 col1, col2 = st.columns([1, 3])
 with col1:    
     school_lv = ["초등학생", "중학생", "고등학생"]
-    school_lv_choice = st.radio(
-        "학교급 선택",
-        school_lv,
+    with st.container(border=True):
+        school_lv_choice = st.radio(
+            "학교급 선택",
+            school_lv,
 )
 with col2: 
-    selected_list = st.multiselect('학년선택', school_info[school_lv_choice])
+    with st.container(border=True):
+        selected_list = st.multiselect('학년선택', school_info[school_lv_choice])
 ## *** 학교급 및 학년 뷰 정보***
 
 
@@ -96,6 +123,7 @@ if len(selected_list) != 0:
     mid_layout = st.columns(mid_layout_col)
 
     # 학교급 정보를 가져오기 위해 선택한 학교급을 데이터 변수로 매핑하는 데이터를 생성합니다. 
+
     school_data_info = {
         '초등학생': 'E', 
         '중학생': 'M',
@@ -230,17 +258,55 @@ if len(selected_list) != 0:
 
     graph_col1, graph_col2 = st.columns([2, 1])
     with graph_col1:    
-        graph = agraph(nodes=nodes, 
-                            edges=edges, 
-                            config=config)
+        with st.container(border=True):
+            graph = agraph(nodes=nodes, 
+                                edges=edges, 
+                                config=config)
     
-    with graph_col2: 
-        st.write(graph)
-        st.write(side_df_D)
+    with graph_col2:
+        with st.container(border=True):
+            if graph:
+                code_id_length = len(graph)
+
+                A_length = 8
+                B_length = 11
+                C_length = 14
+
+                achievement_standards_df = pd.DataFrame()
+                ACH_STANDARD_COL = ['ID', 'A_성취기준', 'B_성취기준', 'C_성취기준']
+
+                #st.write(side_df_D)
+
+                if code_id_length == A_length:
+                    st.markdown("##### 클릭한 주제")
+                    st.write(A_code_merge[A_code_merge['대주제'] == graph])
+
+                    # 선택한 graph의 대주제 데이터 가져오기  
+                    separate_df = get_learning_separate_data(select_grade_df, graph, "A")
+                    show_achieve_standards_info(separate_df, side_df_D)
+
+
+                elif code_id_length == B_length:
+                    st.markdown("##### 클릭한 주제")
+                    st.write(B_code_merge[B_code_merge['중주제'] == graph])
+
+                    # 선택한 graph의 대주제 데이터 가져오기  
+                    separate_df = get_learning_separate_data(select_grade_df, graph, "B")
+                    show_achieve_standards_info(separate_df, side_df_D)
+
+                elif code_id_length == C_length:
+                    st.markdown("##### 클릭한 주제")
+                    st.write(C_code_merge[C_code_merge['소주제'] == graph])
+
+                    # 선택한 graph의 대주제 데이터 가져오기  
+                    separate_df = get_learning_separate_data(select_grade_df, graph, "C")
+                    show_achieve_standards_info(separate_df, side_df_D)
+
+
+
+            
 else :
     st.text('')    
-
-
 
 
 

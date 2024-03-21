@@ -5,7 +5,7 @@ import pandas as pd
 SHEET_L = '대주제(A)'
 SHEET_M = '중주제(B)'
 SHEET_S = '소주제(C)'
-#SHEET_SPE = '대주제(C)'
+SHEET_ACH = '관련성취기준'
 
 
 def get_data_math(sheet):
@@ -21,6 +21,8 @@ def get_data_math(sheet):
         data = pd.read_excel(file_name, sheet_name=SHEET_M)       
     elif sheet == 'C':
         data = pd.read_excel(file_name, sheet_name=SHEET_S)        
+    elif sheet == 'ACH':
+        data = pd.read_excel(file_name, sheet_name=SHEET_ACH)   
 
     return data
 
