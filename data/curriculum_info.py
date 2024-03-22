@@ -1,7 +1,6 @@
 import pandas as pd
 
 
-
 SHEET_L = '대주제(A)'
 SHEET_M = '중주제(B)'
 SHEET_S = '소주제(C)'
@@ -12,7 +11,6 @@ def get_data_math(sheet):
     SHEET_CODE = '최종 코딩 양식'
     file_name = './data/math_code_2022.xlsx'
     
-    print(sheet)
     if sheet == 0:
         data = pd.read_excel(file_name, dtype='object', sheet_name=SHEET_CODE)
     elif sheet == 'A':
@@ -40,6 +38,3 @@ def get_data_english(sheet):
         data = pd.read_excel(file_name, sheet_name=SHEET_S)        
 
     return data
-
-
-print(get_data_math('A'))

@@ -6,6 +6,11 @@ from streamlit_option_menu import option_menu
 from data import curriculum_info as curri_info
 from streamlit_agraph import agraph, Node, Edge, Config, TripleStore
 
+from yj_func import sidebar as yj_side
+from yj_func import header as yj_head
+from yj_func import content_choice as yj_cont_cho
+from yj_func import preprocess as yj_pre
+
 st.set_page_config(layout="wide")
 
 
@@ -28,6 +33,7 @@ def get_learning_separate_data(data, value, div):
     return result_df
 
 def show_achieve_standards_info(data, achieve_data):
+    
     ACH_STANDARD_COL = ['ID', 'A_성취기준', 'B_성취기준', 'C_성취기준']
     ACH_STANDARD_COL_NAME = ['성취기준']
     
@@ -43,73 +49,69 @@ def show_achieve_standards_info(data, achieve_data):
         st.write(pre_ach_merge.iloc[ach_i]['설명'])
         st.write("")   
 
-## 사이드바 코드 시작 ##
-# 메뉴 항목 생성
-with st.sidebar:
-    selected_menu = option_menu("과목 선택", ["수학", "영어", "정보"],
-                                icons=['bi bi-plus-slash-minus', 'bi bi-alphabet-uppercase', 'bi bi-laptop'],
-                                menu_icon="bi bi-book", default_index=0,
-                                styles={
-                                    "container": {"padding": "4!important",  "background-color": "#fafafa", "font-weight": "bold"},
-                                    "icon": {"color": "black", "font-size": "25px"},
-                                    "nav-link": {"font-size": "18px", "text-align": "left", "margin": "0px",
-                                                "--hover-color": "#fafafa"},
-                                    "nav-link-selected": {"background-color": "#08c7b4"},
-                                })
+# -------------------- 사이드바 영역 -------------------- #
+selected_menu = yj_side.get_sidebar()
+
+# --------------------   헤더 영역   -------------------- #
+subject_data = yj_head.get_subjects_code(selected_menu)
+
+# -------------------- 콘텐츠 영역1 -------------------- #
+school_grade = yj_cont_cho.get_selected_school_garde()
 
 
-# 선택된 메뉴에 따라 다른 데이터 표시 ***헤더 뷰 정보***
-if selected_menu == "수학":
+# if selected_menu == "수학":
 
-    st.markdown("##### 수학 데이터를 표시합니다.")
-    main_df = curri_info.get_data_math(0)
-    side_df_A = curri_info.get_data_math('A')
-    side_df_B = curri_info.get_data_math('B')
-    side_df_C = curri_info.get_data_math('C')
-    side_df_D = curri_info.get_data_math('ACH')
+#     st.markdown("##### 수학 데이터를 표시합니다.")
+#     main_df = curri_info.get_data_math(0)
+#     side_df_A = curri_info.get_data_math('A')
+#     side_df_B = curri_info.get_data_math('B')
+#     side_df_C = curri_info.get_data_math('C')
+#     side_df_D = curri_info.get_data_math('ACH')
 
-    label_text = "수학과목 코드 정보"
-    with st.expander(label=label_text, expanded=True):
-        st.dataframe(main_df) 
+#     label_text = "수학과목 코드 정보"
+#     with st.expander(label=label_text, expanded=True):
+#         st.dataframe(main_df) 
     
-elif selected_menu == "영어":
-    st.write("영어 데이터를 표시합니다.")
-    df = curri_info.get_data_english(0)
-    st.dataframe(df.head()) 
-else:
-    st.write("정보 데이터를 표시합니다.")
-    st.dataframe(df_s.head()) 
+# elif selected_menu == "영어":
+#     st.write("영어 데이터를 표시합니다.")
+#     df = curri_info.get_data_english(0)
+#     st.dataframe(df.head()) 
+# else:
+#     st.write("정보 데이터를 표시합니다.")
+#     st.dataframe(df_s.head()) 
+
+
 ## 사이드바 코드 끝 ##
 
 
+# ## *** 학교급 및 학년 뷰 정보***
+# es_grade = ['3학년','4학년','5학년','6학년']
+# ms_grade = ['1학년','2학년','3학년']
+# hs_grade = ['1학년'] 
+# school_info = {'초등학생': es_grade, 
+#                '중학생': ms_grade,
+#                '고등학생': hs_grade}   
+
+
+# st.markdown("##### 학교급, 학년도별 주제를 확인합니다.")
+# col1, col2 = st.columns([1, 3])
+# with col1:    
+#     school_lv = ["초등학생", "중학생", "고등학생"]
+#     with st.container(border=True):
+#         school_lv_choice = st.radio(
+#             "학교급 선택",
+#             school_lv,
+# )
+# with col2: 
+#     with st.container(border=True):
+#         selected_list = st.multiselect('학년선택', school_info[school_lv_choice])
 ## *** 학교급 및 학년 뷰 정보***
-es_grade = ['3학년','4학년','5학년','6학년']
-ms_grade = ['1학년','2학년','3학년']
-hs_grade = ['1학년'] 
-school_info = {'초등학생': es_grade, 
-               '중학생': ms_grade,
-               '고등학생': hs_grade}   
 
 
-st.markdown("##### 학교급, 학년도별 주제를 확인합니다.")
-col1, col2 = st.columns([1, 3])
-with col1:    
-    school_lv = ["초등학생", "중학생", "고등학생"]
-    with st.container(border=True):
-        school_lv_choice = st.radio(
-            "학교급 선택",
-            school_lv,
-)
-with col2: 
-    with st.container(border=True):
-        selected_list = st.multiselect('학년선택', school_info[school_lv_choice])
-## *** 학교급 및 학년 뷰 정보***
-
-
-if len(selected_list) != 0:
+if len(school_grade[1]) != 0:
     
     # 선택한 학년의 개수를 저장합니다.
-    list_len = len(selected_list) 
+    list_len = len(school_grade[1]) 
 
     # 선택한 학년 개수에 따라 레이아웃 영역을 생성하기 위한 변수를 선언합니다. 
     mid_layout_col = [] 
@@ -134,40 +136,43 @@ if len(selected_list) != 0:
     for i in range(list_len):
 
         # 선택한 학교급 및 학년 정보에 해당하는 데이터를 가져옵니다. 
-        select_grade_df = main_df[(main_df['학교급'] == school_data_info[school_lv_choice]) & (main_df['학년'] == int(selected_list[i][:1]))]
 
-        #""" 선택한 학년의 대주제(A) 코드 및 코드 설명 데이터 생성 과정 start """
-        # 대주제 sheet와 매핑 가능한 데이터를 생성하는 과정
-        # select_grade_df 에서 학교급(E)+학년(4)+교과(MATH)+대주제(A03) 스트링 데이터를 합하여 A_code를 생성
-        # A_code = 'E4MATHA03' 
-        select_grade_df['A_code'] = select_grade_df['학교급'].map(str)+select_grade_df['학년'].map(str)+select_grade_df['교과'].map(str)+select_grade_df['대주제'].map(str)
+        SCHOOL_COL = ['학교급']
+        GRADE_COL = ['학년']
 
-        # 생성한 A_code의 중복된 데이터를 제거하는 과정
-        # A_code_unique = A_code 고유값
-        A_code_unique = pd.DataFrame(select_grade_df['A_code'].unique(), columns=['대주제'])
-        
+        # 메인코드 -- 매개변수 
+        main_code = subject_data[0]
+        select_school = school_data_info[school_grade[0]] # 00학교
+        select_grade = int(school_grade[1])               # 3 
+
+        # 학교급, 학년 데이터 추출하고 대주제 코드 생성하기
+        MAP_COL = ['학교급','학년','교과','대주제']
+        select_school_grade_df = yj_pre.set_shcool_grade_preprocess(main_code, select_school,  select_grade)
+        select_school_grade_df['A_code'] = yj_pre.set_create_A_code(select_school_grade_df, MAP_COL)
+       
+        # 생성한 대주제 코드 중복 제거하기 
+        A_code_unique = yj_pre.get_col_unique_value(select_school_grade_df['A_code'], '대주제')
+
         # A_code_unique와 side_df_A(대주제 sheet)를 merge하는 과정 
         # A_code_merge = 대주제 코드, 대주제 코드 설명 구조
-        A_code_merge = pd.merge(A_code_unique,  side_df_A, on="대주제", how='left') 
-        #""" 선택한 학년의 대주제(A) 코드 및 코드 설명 데이터 생성 과정 end """
-
-
+        A_code_merge = pd.merge(A_code_unique,  subject_data[1], on="대주제", how='left') 
+        
         #""" 선택한 학년의 중주제(B) 코드 및 코드 설명 데이터 생성 과정 start """
         # 대주제(A) sheet와 중주제(B) sheet의 매핑 가능한 데이터를 생성하는 과정
         # 'E4MATHA03B01' → 'E4MATHA03' 
         # side_df_B['대주제'] = 'E4MATHA03'         
-        side_df_B['대주제'] = side_df_B['중주제'].str.slice(start=0, stop=8)
+        subject_data[2]['대주제'] = subject_data[2]['중주제'].str.slice(start=0, stop=8)
         
         # A_code_merge(대주제 코드)와 side_df_B(중주제 코드)를 merge하는 과정 
         # B_code_merge = 대주제 코드, 대주제 코드 설명, 
         #                중주제 코드, 중주제 코드 설명 구조      
-        B_code_merge = pd.merge(A_code_merge,  side_df_B, on="대주제", how='left') 
+        B_code_merge = pd.merge(A_code_merge,  subject_data[2], on="대주제", how='left') 
         #st.write(B_code_merge)
         #""" 선택한 학년의 중주제(B) 코드 및 코드 설명 데이터 생성 과정 end """
 
         #""" 선택한 학년의 소주제(C) 코드 및 코드 설명 데이터 생성 과정 start """        
-        side_df_C['중주제'] = side_df_C['소주제'].str.slice(start=0, stop=11)
-        C_code_merge = pd.merge(B_code_merge,  side_df_C, on="중주제", how='left') 
+        subject_data[3]['중주제'] = subject_data[3]['소주제'].str.slice(start=0, stop=11)
+        C_code_merge = pd.merge(B_code_merge,  subject_data[3], on="중주제", how='left') 
         #""" 선택한 학년의 소주제(C) 코드 및 코드 설명 데이터 생성 과정 end """
         
         # with mid_layout[i]: 
