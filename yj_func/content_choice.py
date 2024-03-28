@@ -13,6 +13,7 @@ school_info = {
     '고등학생': hs_grade
     }   
 
+
 def get_selected_school_garde():
     st.markdown("##### 학교급, 학년도별 주제를 확인합니다.")
 
