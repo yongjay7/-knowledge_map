@@ -10,7 +10,7 @@ def show_math_graph(data):
     edges = []
 
     colors = {
-        'E':['wheat', 'orange', 'tan', 'darkorange'] ,
+        'E':['','','wheat', 'orange', 'tan', 'darkorange'] ,
         'M':['lightgreen', 'seagreen', 'darkgreen']  ,
         'H':['royalblue'] ,
     }
@@ -24,7 +24,9 @@ def show_math_graph(data):
             )
     
     concept_unique = data['핵심개념'].unique()
-    
+   
+    data=data[data['학교급'] == 'M']
+    # 핵심 개념별 for 문 
     for n, name in enumerate(concept_unique):
         data_concept = data[data['핵심개념'] == name]
 
@@ -38,7 +40,7 @@ def show_math_graph(data):
             node_grade = int(node_grade)
 
             if node_level == 'E':
-                node_grade = node_grade-3
+                node_grade = node_grade-1
             elif node_level == 'M':
                 node_grade = node_grade-1
             elif node_level == 'H':
@@ -54,48 +56,86 @@ def show_math_graph(data):
                     #font={'color': },
             )) 
 
-        for i in range(len(data_concept)-1, 0, -1):     
+        for j in range(len(data_concept)-1, 0, -1):     
 
-            edges.append( Edge(source=data_concept.iloc[i]['코드'], 
+            edges.append( Edge(source=data_concept.iloc[j]['코드'], 
                 #label="friend_of",
-                target=data_concept.iloc[i-1]['코드'], 
+                target=data_concept.iloc[j-1]['코드'], 
                 # **kwargs
                 ) 
             )
 
-    for i in range(len(data)):     
+    for n, name in enumerate(concept_unique):
+        data_concept = data[data['핵심개념'] == name]
+        for i in reversed(range(len(data_concept))):
 
-        pre_code = data.iloc[i]['선수 학습']
-        aft_code = data.iloc[i]['후속 학습']
+            node_id = data_concept.iloc[i]['코드']       
+            node_pre = data_concept.iloc[i]['선수 학습']    
+            node_aft = data_concept.iloc[i]['후속 학습']  
 
-        if pd.notna(pre_code):
+    
+            st.write(node_pre, node_aft)
+            #st.write('data is', pre_code, aft_code)
+            if pd.notna(node_pre):
+                
+                pre_code_list = node_pre.split(',')
+                for p, code in enumerate(pre_code_list):
+                    
+                    edges.append( Edge(source=code, 
+                    #label="friend_of",
+                    target=node_id, 
+                    # **kwargs
+                    ) 
+                )
+                
+            if pd.notna(node_aft):
+
+                aft_code_list = node_aft.split(',')
+
+                for q, code in enumerate(aft_code_list):
+                    edges.append( Edge(source=node_id, 
+                    #label="friend_of",
+                    target=code, 
+                    # **kwargs
+                    ) 
+                )   
+
+
+
+
+    # for i in range(len(data)):     
+
+    #     pre_code = data.iloc[i]['선수 학습']
+    #     aft_code = data.iloc[i]['후속 학습']
+
+    #     if pd.notna(pre_code):
             
-            pre_code_list = pre_code.split(',')
+    #         pre_code_list = pre_code.split(',')
 
-            #st.write(pre_code_list)
-            for j, code in enumerate(pre_code_list):
-                st.write('--pre---')
-                st.write('data is', data.iloc[j]['코드'])
-                edges.append( Edge(source=code, 
-                #label="friend_of",
-                target=data.iloc[j]['코드'], 
-                # **kwargs
-                ) 
-            )
+    #         #st.write(pre_code_list)
+    #         for j, code in enumerate(pre_code_list):
+    #             st.write('--pre---')
+    #             st.write('data is', data.iloc[j]['코드'])
+    #             edges.append( Edge(source=code, 
+    #             #label="friend_of",
+    #             target=data.iloc[j]['코드'], 
+    #             # **kwargs
+    #             ) 
+    #         )
             
-        if pd.notna(aft_code):
+    #     if pd.notna(aft_code):
 
-            aft_code_list = aft_code.split(',')
+    #         aft_code_list = aft_code.split(',')
 
-            for j, code in enumerate(aft_code_list):
-                st.write('--aft---')
-                st.write('data is', data.iloc[j]['코드'])
-                edges.append( Edge(source=data.iloc[j]['코드'], 
-                #label="friend_of",
-                target=code, 
-                # **kwargs
-                ) 
-            )         
+    #         for j, code in enumerate(aft_code_list):
+    #             st.write('--aft---')
+    #             st.write('data is', data.iloc[j]['코드'])
+    #             edges.append( Edge(source=data.iloc[j]['코드'], 
+    #             #label="friend_of",
+    #             target=code, 
+    #             # **kwargs
+    #             ) 
+    #         )         
 
 
 
