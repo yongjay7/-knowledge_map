@@ -62,65 +62,71 @@ tab1, tab2 = st.tabs(['대주제, 중주제, 소주제 관계보기', '학습위
 
 
 with tab2:
+    # 학교급, 학년 데이터 가져오기 ex: ('초등학생', '3')
+    school_grade2 = yj_cont_cho.get_selected_school_garde(2)
+    
+    # 학습 위계 데이터 가져오기 
+    #Learning_hierarchy_data = 
+    yj_grap.get_subject_hierarchy_info(selected_menu, school_grade2)
+    
 
-        yj_grap.get_subject_hierarchy_info(selected_menu)
-        # graph_col1, graph_col2 = st.columns([2, 1])
+    # graph_col1, graph_col2 = st.columns([2, 1])
 
 
-        # #with st.container(border=True):
-        # math_rank = pd.read_excel('./data/math_rank_2022.xlsx')
-        # #math_rank['학년'] =  math_rank['코드'].str.slice(start=1, stop=2)
-        # #math_rank_df = math_rank[math_rank['학년'] == str(select_grade) ]
+    # #with st.container(border=True):
+    # math_rank = pd.read_excel('./data/math_rank_2022.xlsx')
+    # #math_rank['학년'] =  math_rank['코드'].str.slice(start=1, stop=2)
+    # #math_rank_df = math_rank[math_rank['학년'] == str(select_grade) ]
 
-        # math_rank_num = math_rank['영역'].nunique()
-        # col_num = [1] * math_rank_num
-        # col_list = math_rank['영역'].unique()
+    # math_rank_num = math_rank['영역'].nunique()
+    # col_num = [1] * math_rank_num
+    # col_list = math_rank['영역'].unique()
+
+    
+    # btn_col_list = st.columns(col_num)
+    
+    
+    # with btn_col_list[0]:
+    #     st.button(col_list[0])
+    # with btn_col_list[1]:
+    #     st.button(col_list[1])   
+
+    # st.write(math_rank)                     
+    # st.write(col_list)                     
+    # for i, name in enumerate(col_list):
+
+    #     st.write(name)
+    #     with st.container(border=True):
+    #         math_rank_df_2 = math_rank[math_rank['영역'] == name]
+
+    #         unique_unit = math_rank_df_2['핵심개념'].unique()
+    #         for j, unit in enumerate(unique_unit):
+    #             with st.container(border=True):
+    #                 yj_grap.show_graph_2(math_rank_df_2[math_rank_df_2['핵심개념'] == unit])
+    #                 #agraph(nodes=ddd[0], 
+    #                 #edges=ddd[1],
+    #                 #config=ddd[2])
+
+
+
+    
+    # # st.write("어떻게 보이나요1")
+    # # st.write(math_rank_df)
+    # # with st.container(border=True):
+
+    # #     yj_grap.show_graph_2(math_rank_df[math_rank_df['핵심개념'] == '수의 체계'])
 
         
-        # btn_col_list = st.columns(col_num)
-        
-        
-        # with btn_col_list[0]:
-        #     st.button(col_list[0])
-        # with btn_col_list[1]:
-        #     st.button(col_list[1])   
+    # # with st.container(border=True):    
 
-        # st.write(math_rank)                     
-        # st.write(col_list)                     
-        # for i, name in enumerate(col_list):
-
-        #     st.write(name)
-        #     with st.container(border=True):
-        #         math_rank_df_2 = math_rank[math_rank['영역'] == name]
-
-        #         unique_unit = math_rank_df_2['핵심개념'].unique()
-        #         for j, unit in enumerate(unique_unit):
-        #             with st.container(border=True):
-        #                 yj_grap.show_graph_2(math_rank_df_2[math_rank_df_2['핵심개념'] == unit])
-        #                 #agraph(nodes=ddd[0], 
-        #                 #edges=ddd[1],
-        #                 #config=ddd[2])
+    #     yj_grap.show_graph_2(math_rank_df[math_rank_df['핵심개념'] == '수의 연산'])
 
 
-
-        
-        # # st.write("어떻게 보이나요1")
-        # # st.write(math_rank_df)
-        # # with st.container(border=True):
-
-        # #     yj_grap.show_graph_2(math_rank_df[math_rank_df['핵심개념'] == '수의 체계'])
-
-            
-        # # with st.container(border=True):    
-
-        #     yj_grap.show_graph_2(math_rank_df[math_rank_df['핵심개념'] == '수의 연산'])
-
-
-        st.write("끝")    
+    st.write("끝")    
 with tab1:
 
     # -------------------- 콘텐츠 영역1 -------------------- #
-    school_grade = yj_cont_cho.get_selected_school_garde()
+    school_grade = yj_cont_cho.get_selected_school_garde(1)
     if len(school_grade[1]) != 0:
         
         # 선택한 학년의 개수를 저장합니다.

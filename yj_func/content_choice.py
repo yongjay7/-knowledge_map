@@ -14,7 +14,7 @@ school_info = {
     }   
 
 
-def get_selected_school_garde():
+def get_selected_school_garde(key_value):
     st.markdown("##### 학교급, 학년도별 주제를 확인합니다.")
 
     col1, col2 = st.columns([1, 3])
@@ -23,9 +23,10 @@ def get_selected_school_garde():
             school_lv_choice = st.radio(
                 "학교급 선택",
                 school_lv,
+                 key=key_value,
     )
     with col2: 
         with st.container(border=True):
-            selected_list = st.selectbox('학년선택', school_info[school_lv_choice])
+            selected_list = st.selectbox('학년선택', school_info[school_lv_choice],  key='select'+str(key_value))
 
     return school_lv_choice, selected_list[:1]
