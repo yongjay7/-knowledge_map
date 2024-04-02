@@ -3,6 +3,7 @@ import streamlit as st
 import pandas as pd
 from streamlit_agraph import agraph, Node, Edge, Config, TripleStore
 
+from yj_func import preprocess as yj_pre
 import math
 
 #def graw_nodes(data):
@@ -13,25 +14,28 @@ SCH_LV_COLOR = {
 }
     
 def graw_hierarchy_nodes(nodes, node_data, math_hry, unique_code):
-    
+
     for i in range(len(node_data)):
         
         pre_code_list = node_data.iloc[i][0].split(',')   
-        #st.write(pre_code_list)
+
         for j in range(len(pre_code_list)):
             
             node_id = pre_code_list[j]
+            node_id = node_id.replace(" ", "")
+
             node_label = math_hry[math_hry['코드'] == node_id]['개념'].values[0]
             node_level = math_hry[math_hry['코드'] == node_id]['학교급'].values[0]
             node_grade = math_hry[math_hry['코드'] == node_id]['학년'].values[0]
             node_grade = int(node_grade)-1
 
+            node_concept = math_hry[math_hry['코드'] == node_id]['핵심개념'].values[0]
             if node_id not in unique_code:
                 nodes.append(Node(
                     id=node_id, 
-                    label=node_label, 
-                    size=30, 
-                    shape="dot",
+                    label=node_label+'\n['+node_concept+']', 
+                    size=25, 
+                    shape="hexagon",
                     color= SCH_LV_COLOR[node_level][node_grade]
                     #font={'color': },
                 ))      
@@ -40,13 +44,23 @@ def graw_hierarchy_nodes(nodes, node_data, math_hry, unique_code):
 
 def get_math_graph_info(math_hry, math_lv_gr):
     
+    shapes ={
+        0: 'diamond', 
+        1: 'dot', 
+        2: 'star', 
+        3: 'triangle', 
+        4: 'triangleDown', 
+        5: 'square', 
+        6: 'hexagon',
+        7: 'icon'
+    }
+    
     nodes = []  
     edges = []
     
     node_pre = pd.DataFrame(math_lv_gr['선수 학습'].unique()).dropna()
     node_aft = pd.DataFrame(math_lv_gr['후속 학습'].unique()).dropna()
-    
-    st.write(node_pre)
+
 
     # 핵심 개념별 for 문 
     
@@ -65,22 +79,23 @@ def get_math_graph_info(math_hry, math_lv_gr):
             node_grade = data_concept.iloc[i]['학년']
             node_grade = int(node_grade) - 1
 
+
             nodes.append(Node(
                 id=node_id, 
-                label=node_label, 
-                size=30, 
-                shape="dot",
-                color= SCH_LV_COLOR[node_level][node_grade],
+                label=node_label+'\n['+name+']', 
+                size=25, 
+                shape=shapes[n],
+                color= SCH_LV_COLOR[node_level][node_grade]
                 #font={'color': '#B0B0B0'}
-            )) 
+            ))
 
+             
         for j in range(len(data_concept)-1, 0, -1):     
 
             edges.append(Edge(
                 source=data_concept.iloc[j]['코드'], 
-                #label="friend_of",
                 target=data_concept.iloc[j-1]['코드'], 
-                
+                color='#000'
                 ) 
             ) 
             
@@ -96,9 +111,6 @@ def get_math_graph_info(math_hry, math_lv_gr):
             node_pre = data_concept.iloc[i]['선수 학습']    
             node_aft = data_concept.iloc[i]['후속 학습']  
 
-
-            st.write(node_pre, node_aft)
-            #st.write('data is', pre_code, aft_code)
             if pd.notna(node_pre):
                 
                 pre_code_list = node_pre.split(',')
@@ -107,7 +119,8 @@ def get_math_graph_info(math_hry, math_lv_gr):
                     edges.append( Edge(source=code, 
                     #label="friend_of",
                     target=node_id, 
-                    color = 'red'
+                    color = 'red',
+                    width = 2
                     ) 
                 )
                 
@@ -124,33 +137,16 @@ def get_math_graph_info(math_hry, math_lv_gr):
                     ) 
                 )   
       
-    # for i in range(len(node_pre)):
-        
-    #     pre_code_list = node_pre.iloc[i][0].split(',')   
-    #     #st.write(pre_code_list)
-    #     for j in range(len(pre_code_list)):
-            
-    #         node_id = pre_code_list[j]
-    #         node_label = math_hry[math_hry['코드'] == node_id]['개념'].values[0]
-            
-    #         st.write(node_id)
-    #         st.write(node_label)
-            
-    #         nodes.append(Node(
-    #             id=node_id, 
-    #             label=node_label, 
-    #             size=30, 
-    #             shape="dot",
-    #             #color= colors[node_level][node_grade]
-    #             #font={'color': },
-    #         ))  
-    
-    config = Config(width=2100,
-            height=1000,
-            directed=True, 
-            #physics=True, 
-            hierarchical="shakeTowards",
-            color="#eeeeee",
+    # 그래프 설정
+    config = Config(width=1200,
+            height=800,
+            directed=True,  
+            node={
+                    'labelProperty': 'label',
+                    'style': {"color": {'border': '#2B7CE9',}},
+                    'renderLabel': True
+                },        
+            highlightColor="#F7A7A6"   
             )
 
     return nodes, edges, config
@@ -347,10 +343,20 @@ def get_subject_hierarchy_info(selected_menu, schlv_grade):
 
         
         graph_info = get_math_graph_info(math_hry, math_lv_gr)
-        graph = agraph(nodes=graph_info[0], 
-                edges=graph_info[1], 
-                config=graph_info[2])    
-        st.write(graph)
+
+  
+        math_graph_col1, math_graph_col2 = st.columns([2, 1])
+        with math_graph_col1:    
+            with st.container(border=True):
+                graph = agraph(nodes=graph_info[0], 
+                        edges=graph_info[1], 
+                        config=graph_info[2])  
+        
+        with math_graph_col2:
+            with st.container(border=True):
+                if graph:
+                    st.write(graph)
+                    yj_pre.get_math_achievement_standards(graph)
 
    
     elif selected_menu == "영어":

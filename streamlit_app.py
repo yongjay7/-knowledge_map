@@ -287,7 +287,7 @@ with tab1:
                     #st.write(side_df_D)
 
                     if code_id_length == A_length:
-                        st.markdown("##### 클릭한 주제")
+                        st.markdown("##### 클릭한 코드의 성취기준")
                         st.write(A_code_merge[A_code_merge['대주제'] == graph])
 
                         # 선택한 graph의 대주제 데이터 가져오기  
@@ -296,7 +296,7 @@ with tab1:
 
 
                     elif code_id_length == B_length:
-                        st.markdown("##### 클릭한 주제")
+                        st.markdown("##### 클릭한 코드의 성취기준")
                         st.write(B_code_merge[B_code_merge['중주제'] == graph])
 
                         # 선택한 graph의 대주제 데이터 가져오기  
@@ -304,7 +304,7 @@ with tab1:
                         show_achieve_standards_info(separate_df, archive_code)
 
                     elif code_id_length == C_length:
-                        st.markdown("##### 클릭한 주제")
+                        st.markdown("##### 클릭한 코드의 성취기준")
                         st.write(C_code_merge[C_code_merge['소주제'] == graph])
 
                         # 선택한 graph의 대주제 데이터 가져오기  
