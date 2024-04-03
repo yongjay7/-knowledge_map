@@ -8,7 +8,7 @@ SHEET_M = '중주제(B)'
 SHEET_S = '소주제(C)'
 SHEET_ACH = '관련성취기준'
 
-
+@st.cache_data
 def get_data_math(sheet):
     SHEET_CODE = '최종 코딩 양식'
     file_name = './data/math_code_2022.xlsx'
@@ -26,7 +26,17 @@ def get_data_math(sheet):
 
     return data
 
+@st.cache_data
+def get_data_math_learning_hierarchy():
 
+    file_name = './data/math_rank_2022.xlsx'
+
+    data = pd.read_excel(file_name)
+
+    return data
+
+
+@st.cache_data
 def get_data_english(sheet):
     SHEET_CODE = '코딩맵'
     file_name = './data/english_code_2022.xlsx'

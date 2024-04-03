@@ -4,6 +4,9 @@ import pandas as pd
 from streamlit_agraph import agraph, Node, Edge, Config, TripleStore
 
 from yj_func import preprocess as yj_pre
+from yj_func import content_choice as yj_cont_cho
+from data import curriculum_info as curri_info
+
 import math
 
 #def graw_nodes(data):
@@ -13,6 +16,8 @@ SCH_LV_COLOR = {
     'H':['royalblue'] ,
 }
     
+SUBJECT_LIST = ['수학', '영어', '정보']
+
 def graw_hierarchy_nodes(nodes, node_data, math_hry, unique_code):
 
     for i in range(len(node_data)):
@@ -248,62 +253,9 @@ def show_math_graph(data):
                 )   
 
 
-
-
-    # for i in range(len(data)):     
-
-    #     pre_code = data.iloc[i]['선수 학습']
-    #     aft_code = data.iloc[i]['후속 학습']
-
-    #     if pd.notna(pre_code):
-            
-    #         pre_code_list = pre_code.split(',')
-
-    #         #st.write(pre_code_list)
-    #         for j, code in enumerate(pre_code_list):
-    #             st.write('--pre---')
-    #             st.write('data is', data.iloc[j]['코드'])
-    #             edges.append( Edge(source=code, 
-    #             #label="friend_of",
-    #             target=data.iloc[j]['코드'], 
-    #             # **kwargs
-    #             ) 
-    #         )
-            
-    #     if pd.notna(aft_code):
-
-    #         aft_code_list = aft_code.split(',')
-
-    #         for j, code in enumerate(aft_code_list):
-    #             st.write('--aft---')
-    #             st.write('data is', data.iloc[j]['코드'])
-    #             edges.append( Edge(source=data.iloc[j]['코드'], 
-    #             #label="friend_of",
-    #             target=code, 
-    #             # **kwargs
-    #             ) 
-    #         )         
-
-
-
-
-
-
-
-
-    # agraph(nodes=nodes, 
-    #     edges=edges,
-    #     config=config)
-    
     return nodes, edges, config
-    
-    if agraph:
-        st.write(agraph)
-   # return nodes, edges, config
 
 
-def say_hello(i):
-   st.write('Hello, Streamlit!', i)
    
 def get_school_grade_df(data, schlv_grade):
     
@@ -324,27 +276,29 @@ def get_school_grade_df(data, schlv_grade):
     return result_data
 
 
-def get_subject_hierarchy_info(selected_menu, schlv_grade):
+def show_subject_hierarchy_content_lv(selected_menu):
+    # 학교급, 학년 데이터 가져오기 ex: ('초등학생', '3')
+    schlv_grade = yj_cont_cho.get_selected_school_garde(2)
 
-    if selected_menu == "수학":
+
+    if selected_menu == SUBJECT_LIST[0]:
+
+        data_col_list = ['코드', '학교급', '학년', '영역']
 
         area_col = '영역'
         concept_col = '핵심개념'
         main_code_name = '코드'
 
-        math_hry          = pd.read_excel('./data/math_rank_2022.xlsx')
-        math_hry['학교급']  =  math_hry[main_code_name].str.slice(start=0, stop=1)
-        math_hry['학년']  =  math_hry[main_code_name].str.slice(start=1, stop=2)
+        # 학습위계 데이터 가져오기
+        math_learning_hierarchy_data = curri_info.get_data_math_learning_hierarchy()  
+        math_learning_hierarchy_data[data_col_list[1]] =  math_learning_hierarchy_data[data_col_list[0]].str.slice(start=0, stop=1) #학교급 생성
+        math_learning_hierarchy_data[data_col_list[2]] =  math_learning_hierarchy_data[data_col_list[0]].str.slice(start=1, stop=2) #학년 생성
 
-        math_lv_gr = get_school_grade_df(math_hry, schlv_grade)
+        # 선택한 학교급 및 학년의 학습위계 데이터 가져오기
+        math_learning_hierarchy_data_lv_gr = get_school_grade_df(math_learning_hierarchy_data, schlv_grade)
         
-
-        st.write(math_lv_gr)
-
-
-        
-        graph_info = get_math_graph_info(math_hry, math_lv_gr)
-
+        # 그래프 정보 가져오기
+        graph_info = get_math_graph_info(math_learning_hierarchy_data, math_learning_hierarchy_data_lv_gr)
   
         math_graph_col1, math_graph_col2 = st.columns([2, 1])
         with math_graph_col1:    
@@ -372,21 +326,31 @@ def get_subject_hierarchy_info(selected_menu, schlv_grade):
         
         return 0
     
-def get_subject_hierarchy_info_2(selected_menu, learning_area):
-    st.write(learning_area)
-    if selected_menu == "수학":
 
-        area_col = '영역'
-        concept_col = '핵심개념'
-        main_code_name = '코드'
+def show_subject_hierarchy_content_area(selected_subject):
+   
+    if selected_subject == SUBJECT_LIST[0]:
 
-        math_hry           = pd.read_excel('./data/math_rank_2022.xlsx')
-        math_hry['학교급']  =  math_hry[main_code_name].str.slice(start=0, stop=1)
-        math_hry['학년']    =  math_hry[main_code_name].str.slice(start=1, stop=2)
+        data_col_list = ['코드', '학교급', '학년', '영역']
         
-        math_hry_area = math_hry[math_hry[area_col] == learning_area]
+        # 학습위계 데이터 가져오기
+        math_learning_hierarchy_data = curri_info.get_data_math_learning_hierarchy()  
+        math_learning_hierarchy_data[data_col_list[1]] =  math_learning_hierarchy_data[data_col_list[0]].str.slice(start=0, stop=1) #학교급 생성
+        math_learning_hierarchy_data[data_col_list[2]] =  math_learning_hierarchy_data[data_col_list[0]].str.slice(start=1, stop=2) #학년 생성     
+
+        # 학습위계 데이터 영역(unique) 생성
+        learning_area_list = math_learning_hierarchy_data[data_col_list[3]].unique() 
+
+        # 학습위계 데이터 영역(unique) 선택
+        with st.container(border=True):
+            selected_learning_area = st.selectbox('영역선택', learning_area_list, key='learning_area')
+       
         
-        graph_info = get_math_graph_info(math_hry, math_hry_area)
+        # 선택한 영역의 학습위계 데이터 추출
+        math_learning_hierarchy_area = math_learning_hierarchy_data[math_learning_hierarchy_data[data_col_list[3]] == selected_learning_area]
+        
+        # 그래프 정보 가져오기
+        graph_info = get_math_graph_info(math_learning_hierarchy_data, math_learning_hierarchy_area)
 
         math_graph2_col1, math_graph2_col2 = st.columns([2, 1])
         with math_graph2_col1:    
@@ -403,13 +367,13 @@ def get_subject_hierarchy_info_2(selected_menu, learning_area):
 
 
    
-    elif selected_menu == "영어":
+    elif selected_subject == SUBJECT_LIST[1]:
         st.write("영어 데이터를 표시합니다.")
 
 
         return 0
     
-    else:
+    elif selected_subject == SUBJECT_LIST[2]:
         st.write("정보 데이터를 표시합니다.")
 
         

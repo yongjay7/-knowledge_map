@@ -6,121 +6,45 @@ from streamlit_option_menu import option_menu
 from data import curriculum_info as curri_info
 from streamlit_agraph import agraph, Node, Edge, Config, TripleStore
 
+# 사용 함수 정의
 from yj_func import sidebar as yj_side
 from yj_func import header as yj_head
 from yj_func import content_choice as yj_cont_cho
 from yj_func import preprocess as yj_pre
-from yj_func import show_graph as yj_grap
- 
+from yj_func import show_graph as yj_grap 
 
 st.set_page_config(layout="wide")
 
 
-main_df = pd.DataFrame() # 코드 정보
-side_df_A = pd.DataFrame() # 대주제 정보
-side_df_B = pd.DataFrame() # 중주제 정보
-side_df_C = pd.DataFrame() # 소주제 정보
-side_df_D = pd.DataFrame() # 성취기준 정보
-
-def get_learning_separate_data(data, value, div):
-    result_df = pd.DataFrame()
-    DIV_COL = 'ID'
-    if div == 'A':
-        result_df = data[data[DIV_COL].str.slice(start=0, stop=8) == value]
-    elif div == 'B':
-        result_df = data[data[DIV_COL].str.slice(start=0, stop=11) == value]
-    elif div == 'C':
-        result_df = data[data[DIV_COL] == value]        
-    
-    return result_df
-
-def show_achieve_standards_info(data, achieve_data):
-    
-    ACH_STANDARD_COL = ['ID', 'A_성취기준', 'B_성취기준', 'C_성취기준']
-    ACH_STANDARD_COL_NAME = ['성취기준']
-    
-    pre_df = pd.DataFrame(data[ACH_STANDARD_COL].dropna(axis=1).iloc[:, 1].unique(), columns=ACH_STANDARD_COL_NAME)
-    pre_df['성취기준'] = pre_df['성취기준'].str.strip()
-
-    MERGE_COL = '성취기준'
-
-    pre_ach_merge = pd.merge(pre_df, achieve_data, on=MERGE_COL)
-
-    for ach_i in range(len(pre_ach_merge)):
-        #st.write(ach_std_merge.iloc[ach_i]['성취기준'])
-        st.markdown("###### "+pre_ach_merge.iloc[ach_i]['성취기준'])
-        st.write(pre_ach_merge.iloc[ach_i]['설명'])
-        st.write("")   
 
 # -------------------- 사이드바 영역 -------------------- #
-selected_menu = yj_side.get_sidebar()
+selected_subject = yj_side.get_sidebar()
+
 
 
 # --------------------   헤더 영역   -------------------- #
-subject_data = yj_head.get_subjects_code(selected_menu)
+subject_data = yj_head.get_subjects_code(selected_subject)
 
+
+
+# --------------------  콘텐츠 영역   -------------------- #
 tab1, tab2, tab3 = st.tabs(['대주제, 중주제, 소주제 관계보기', '학습위계 보기(학년별)', '학급위계 보기(영역별)'])
 
-with tab3:
-    graph_col1, graph_col2 = st.columns([2, 1])
 
 
-    #with st.container(border=True):
-    math_rank = pd.read_excel('./data/math_rank_2022.xlsx')
-    #math_rank['학년'] =  math_rank['코드'].str.slice(start=1, stop=2)
-    #math_rank_df = math_rank[math_rank['학년'] == str(select_grade) ]
-
-    math_rank_num = math_rank['영역'].nunique()
-    col_num = [1] * math_rank_num
-    col_list = math_rank['영역'].unique()
-
-    with st.container(border=True):
-        selected_learning_area = st.selectbox('학년선택', col_list, key='learning_area')
-    
-    yj_grap.get_subject_hierarchy_info_2(selected_menu, selected_learning_area)
-
-    #yj_grap.get_subject_hierarchy_info(selected_menu, ddd) 
-    # st.write(math_rank)                     
-    # st.write(col_list)                     
-    # for i, name in enumerate(col_list):
-
-    #     st.write(name)
-    #     with st.container(border=True):
-    #         math_rank_df_2 = math_rank[math_rank['영역'] == name]
-
-    #         unique_unit = math_rank_df_2['핵심개념'].unique()
-    #         for j, unit in enumerate(unique_unit):
-    #             with st.container(border=True):
-    #                 yj_grap.show_graph_2(math_rank_df_2[math_rank_df_2['핵심개념'] == unit])
-    #                 #agraph(nodes=ddd[0], 
-    #                 #edges=ddd[1],
-    #                 #config=ddd[2])
+# --------------------  콘텐츠 TAB(2)   -------------------- #
+with tab2:    
+    yj_grap.show_subject_hierarchy_content_lv(selected_subject) 
 
 
+# --------------------  콘텐츠 TAB(3)   -------------------- #
+with tab3:    
+    yj_grap.show_subject_hierarchy_content_area(selected_subject)
 
-    
-    # # st.write("어떻게 보이나요1")
-    # # st.write(math_rank_df)
-    # # with st.container(border=True):
 
-    # #     yj_grap.show_graph_2(math_rank_df[math_rank_df['핵심개념'] == '수의 체계'])
-
-        
-    # # with st.container(border=True):    
-
-    #     yj_grap.show_graph_2(math_rank_df[math_rank_df['핵심개념'] == '수의 연산'])
-
-with tab2:
-    # 학교급, 학년 데이터 가져오기 ex: ('초등학생', '3')
-    school_grade2 = yj_cont_cho.get_selected_school_garde(2)
-    
-    # 학습 위계 데이터 가져오기 
-    yj_grap.get_subject_hierarchy_info(selected_menu, school_grade2) 
-
-    st.write("끝")    
+# --------------------  콘텐츠 TAB(1)   -------------------- #    
 with tab1:
 
-    # -------------------- 콘텐츠 영역1 -------------------- #
     school_grade = yj_cont_cho.get_selected_school_garde(1)
     if len(school_grade[1]) != 0:
         
@@ -286,8 +210,8 @@ with tab1:
                         st.write(A_code_merge[A_code_merge['대주제'] == graph])
 
                         # 선택한 graph의 대주제 데이터 가져오기  
-                        separate_df = get_learning_separate_data(main_code, graph, "A")
-                        show_achieve_standards_info(separate_df, archive_code)
+                        separate_df = yj_pre.get_learning_separate_data(main_code, graph, "A")
+                        yj_pre.show_achieve_standards_info(separate_df, archive_code)
 
 
                     elif code_id_length == B_length:
@@ -295,47 +219,16 @@ with tab1:
                         st.write(B_code_merge[B_code_merge['중주제'] == graph])
 
                         # 선택한 graph의 대주제 데이터 가져오기  
-                        separate_df = get_learning_separate_data(main_code, graph, "B")
-                        show_achieve_standards_info(separate_df, archive_code)
+                        separate_df = yj_pre.get_learning_separate_data(main_code, graph, "B")
+                        yj_pre.show_achieve_standards_info(separate_df, archive_code)
 
                     elif code_id_length == C_length:
                         st.markdown("##### 클릭한 코드의 성취기준")
                         st.write(C_code_merge[C_code_merge['소주제'] == graph])
 
                         # 선택한 graph의 대주제 데이터 가져오기  
-                        separate_df = get_learning_separate_data(main_code, graph, "C")
-                        show_achieve_standards_info(separate_df, archive_code)
-        st.write("삼각형 그리기")
-        plt.figure()
-        plt.plot([0, 1, 0, 0], [0, 1, 1, 0])
-        plt.axis('equal')
-        st.pyplot()
+                        separate_df = yj_pre.get_learning_separate_data(main_code, graph, "C")
+                        yj_pre.show_achieve_standards_info(separate_df, archive_code)
+
     else :
         st.text('')    
-
-
-
-# import streamlit as st
-# from streamlit_agraph import agraph, Node, Config
-
-# # 그래프 데이터 생성
-# nodes = [
-#     Node(id='A1', size=100),
-#     Node(id='B1', size=200),
-#     Node(id='C1', size=300)
-# ]
-
-# edges = []
-# config = Config(width=1400,
-#                 height=1500,
-#                 directed=True, 
-#                 physics=True, 
-#                 #hierarchical=True,
-#                 color="#eeeeee",
-#                 )
-# # 그래프 출력
-
-# graph = agraph(nodes, edges, config)
-# st.write(graph)
-
-

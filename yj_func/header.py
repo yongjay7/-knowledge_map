@@ -35,6 +35,6 @@ def get_subjects_code(subject):
     
     else:
         st.write("정보 데이터를 표시합니다.")
-        st.dataframe(df_s.head()) 
+        st.dataframe(df.head()) 
         
         return 0
