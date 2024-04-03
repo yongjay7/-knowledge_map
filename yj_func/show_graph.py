@@ -341,6 +341,7 @@ def get_subject_hierarchy_info(selected_menu, schlv_grade):
 
         st.write(math_lv_gr)
 
+
         
         graph_info = get_math_graph_info(math_hry, math_lv_gr)
 
@@ -357,6 +358,49 @@ def get_subject_hierarchy_info(selected_menu, schlv_grade):
                 if graph:
                     st.write(graph)
                     yj_pre.get_math_achievement_standards(graph)
+
+   
+    elif selected_menu == "영어":
+        st.write("영어 데이터를 표시합니다.")
+
+
+        return 0
+    
+    else:
+        st.write("정보 데이터를 표시합니다.")
+
+        
+        return 0
+    
+def get_subject_hierarchy_info_2(selected_menu, learning_area):
+    st.write(learning_area)
+    if selected_menu == "수학":
+
+        area_col = '영역'
+        concept_col = '핵심개념'
+        main_code_name = '코드'
+
+        math_hry           = pd.read_excel('./data/math_rank_2022.xlsx')
+        math_hry['학교급']  =  math_hry[main_code_name].str.slice(start=0, stop=1)
+        math_hry['학년']    =  math_hry[main_code_name].str.slice(start=1, stop=2)
+        
+        math_hry_area = math_hry[math_hry[area_col] == learning_area]
+        
+        graph_info = get_math_graph_info(math_hry, math_hry_area)
+
+        math_graph2_col1, math_graph2_col2 = st.columns([2, 1])
+        with math_graph2_col1:    
+            with st.container(border=True):
+                graph = agraph(nodes=graph_info[0], 
+                        edges=graph_info[1], 
+                        config=graph_info[2])  
+        
+        with math_graph2_col2:
+            with st.container(border=True):
+                if graph:
+                    st.write(graph)
+                    yj_pre.get_math_achievement_standards(graph)
+
 
    
     elif selected_menu == "영어":

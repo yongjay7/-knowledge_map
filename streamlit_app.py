@@ -12,6 +12,8 @@ from yj_func import content_choice as yj_cont_cho
 from yj_func import preprocess as yj_pre
 from yj_func import show_graph as yj_grap
 
+import matplotlib.pyplot as plt 
+
 st.set_page_config(layout="wide")
 
 
@@ -58,39 +60,27 @@ selected_menu = yj_side.get_sidebar()
 # --------------------   헤더 영역   -------------------- #
 subject_data = yj_head.get_subjects_code(selected_menu)
 
-tab1, tab2 = st.tabs(['대주제, 중주제, 소주제 관계보기', '학습위계로 보기'])
+tab1, tab2, tab3 = st.tabs(['대주제, 중주제, 소주제 관계보기', '학습위계 보기(학년별)', '학급위계 보기(영역별)'])
+
+with tab3:
+    graph_col1, graph_col2 = st.columns([2, 1])
 
 
-with tab2:
-    # 학교급, 학년 데이터 가져오기 ex: ('초등학생', '3')
-    school_grade2 = yj_cont_cho.get_selected_school_garde(2)
+    #with st.container(border=True):
+    math_rank = pd.read_excel('./data/math_rank_2022.xlsx')
+    #math_rank['학년'] =  math_rank['코드'].str.slice(start=1, stop=2)
+    #math_rank_df = math_rank[math_rank['학년'] == str(select_grade) ]
+
+    math_rank_num = math_rank['영역'].nunique()
+    col_num = [1] * math_rank_num
+    col_list = math_rank['영역'].unique()
+
+    with st.container(border=True):
+        selected_learning_area = st.selectbox('학년선택', col_list, key='learning_area')
     
-    # 학습 위계 데이터 가져오기 
-    #Learning_hierarchy_data = 
-    yj_grap.get_subject_hierarchy_info(selected_menu, school_grade2)
-    
+    yj_grap.get_subject_hierarchy_info_2(selected_menu, selected_learning_area)
 
-    # graph_col1, graph_col2 = st.columns([2, 1])
-
-
-    # #with st.container(border=True):
-    # math_rank = pd.read_excel('./data/math_rank_2022.xlsx')
-    # #math_rank['학년'] =  math_rank['코드'].str.slice(start=1, stop=2)
-    # #math_rank_df = math_rank[math_rank['학년'] == str(select_grade) ]
-
-    # math_rank_num = math_rank['영역'].nunique()
-    # col_num = [1] * math_rank_num
-    # col_list = math_rank['영역'].unique()
-
-    
-    # btn_col_list = st.columns(col_num)
-    
-    
-    # with btn_col_list[0]:
-    #     st.button(col_list[0])
-    # with btn_col_list[1]:
-    #     st.button(col_list[1])   
-
+    #yj_grap.get_subject_hierarchy_info(selected_menu, ddd) 
     # st.write(math_rank)                     
     # st.write(col_list)                     
     # for i, name in enumerate(col_list):
@@ -121,6 +111,12 @@ with tab2:
 
     #     yj_grap.show_graph_2(math_rank_df[math_rank_df['핵심개념'] == '수의 연산'])
 
+with tab2:
+    # 학교급, 학년 데이터 가져오기 ex: ('초등학생', '3')
+    school_grade2 = yj_cont_cho.get_selected_school_garde(2)
+    
+    # 학습 위계 데이터 가져오기 
+    yj_grap.get_subject_hierarchy_info(selected_menu, school_grade2) 
 
     st.write("끝")    
 with tab1:
@@ -310,7 +306,11 @@ with tab1:
                         # 선택한 graph의 대주제 데이터 가져오기  
                         separate_df = get_learning_separate_data(main_code, graph, "C")
                         show_achieve_standards_info(separate_df, archive_code)
-
+        st.write("삼각형 그리기")
+        plt.figure()
+        plt.plot([0, 1, 0, 0], [0, 1, 1, 0])
+        plt.axis('equal')
+        st.pyplot()
     else :
         st.text('')    
 
