@@ -11,8 +11,7 @@ from yj_func import header as yj_head
 from yj_func import content_choice as yj_cont_cho
 from yj_func import preprocess as yj_pre
 from yj_func import show_graph as yj_grap
-
-import matplotlib.pyplot as plt 
+ 
 
 st.set_page_config(layout="wide")
 
