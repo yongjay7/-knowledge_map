@@ -1,9 +1,12 @@
-<mxfile host="app.diagrams.net" modified="2024-05-07T06:40:39.995Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 Edg/124.0.0.0" etag="GBUiWokM5FJGGeBEouRn" version="24.3.1" type="github">
+<mxfile host="app.diagrams.net" modified="2024-05-07T06:47:38.921Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 Edg/124.0.0.0" etag="DNcQHplIXJtM23He1AcM" version="24.3.1" type="github">
   <diagram name="페이지-1" id="qsd2ySiPsfjGHsb-rymO">
     <mxGraphModel dx="1138" dy="628" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
+        <mxCell id="24UresPQj2qS1IkEaMge-32" value="DB" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};" vertex="1" parent="1">
+          <mxGeometry x="520" y="140" width="100" height="580" as="geometry" />
+        </mxCell>
         <mxCell id="24UresPQj2qS1IkEaMge-2" value="Django" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};" vertex="1" parent="1">
           <mxGeometry x="228" y="140" width="100" height="580" as="geometry" />
         </mxCell>
@@ -37,14 +40,14 @@
         <mxCell id="24UresPQj2qS1IkEaMge-28" value="&lt;font style=&quot;font-size: 11px;&quot;&gt;import view&lt;/font&gt;&lt;div style=&quot;font-size: 11px;&quot;&gt;&lt;font style=&quot;font-size: 11px;&quot;&gt;view.index()&amp;nbsp;&lt;/font&gt;&lt;/div&gt;" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=strokeColor;align=left;verticalAlign=top;spacingLeft=10;" vertex="1" parent="1">
           <mxGeometry x="420" y="260" width="5" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="24UresPQj2qS1IkEaMge-32" value="DB" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};" vertex="1" parent="1">
-          <mxGeometry x="520" y="140" width="100" height="580" as="geometry" />
-        </mxCell>
         <mxCell id="24UresPQj2qS1IkEaMge-36" value="a or b" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=open;endFill=0;dashed=1;rounded=0;exitX=-0.1;exitY=1.008;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="24UresPQj2qS1IkEaMge-28">
           <mxGeometry width="160" relative="1" as="geometry">
             <mxPoint x="370" y="320" as="sourcePoint" />
             <mxPoint x="150" y="300" as="targetPoint" />
           </mxGeometry>
+        </mxCell>
+        <mxCell id="24UresPQj2qS1IkEaMge-44" value="Dash server" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};" vertex="1" parent="1">
+          <mxGeometry x="660" y="140" width="100" height="580" as="geometry" />
         </mxCell>
         <mxCell id="24UresPQj2qS1IkEaMge-37" value="alt" style="shape=umlFrame;whiteSpace=wrap;html=1;pointerEvents=0;recursiveResize=0;container=1;collapsible=0;width=40;height=20;" vertex="1" parent="1">
           <mxGeometry x="60" y="320" width="730" height="400" as="geometry" />
@@ -54,8 +57,8 @@
             <mxPoint x="7" y="19" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="24UresPQj2qS1IkEaMge-39" value="b" style="line;strokeWidth=1;dashed=1;labelPosition=center;verticalLabelPosition=bottom;align=left;verticalAlign=top;spacingLeft=20;spacingTop=15;html=1;whiteSpace=wrap;" vertex="1" parent="24UresPQj2qS1IkEaMge-37">
-          <mxGeometry y="290" width="730" height="10" as="geometry" />
+        <mxCell id="24UresPQj2qS1IkEaMge-39" value="" style="line;strokeWidth=1;dashed=1;labelPosition=center;verticalLabelPosition=bottom;align=left;verticalAlign=top;spacingLeft=20;spacingTop=15;html=1;whiteSpace=wrap;" vertex="1" parent="24UresPQj2qS1IkEaMge-37">
+          <mxGeometry y="300" width="730" height="10" as="geometry" />
         </mxCell>
         <mxCell id="24UresPQj2qS1IkEaMge-40" value="localhost:8000/graph/a" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=open;endFill=0;rounded=0;" edge="1" parent="24UresPQj2qS1IkEaMge-37" target="24UresPQj2qS1IkEaMge-3">
           <mxGeometry x="-0.5315" width="160" relative="1" as="geometry">
@@ -106,8 +109,13 @@
             <mxPoint x="650.5" y="230" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="24UresPQj2qS1IkEaMge-44" value="Dash server" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};" vertex="1" parent="1">
-          <mxGeometry x="660" y="140" width="100" height="580" as="geometry" />
+        <mxCell id="24UresPQj2qS1IkEaMge-67" value="[choice = b]" style="text;html=1;" vertex="1" parent="24UresPQj2qS1IkEaMge-37">
+          <mxGeometry width="100" height="20" relative="1" as="geometry">
+            <mxPoint x="7" y="310" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="24UresPQj2qS1IkEaMge-68" value="a 선택지와 동일한 프로세스 ( 데이터 셋 및 호출 그래프가 다름)" style="html=1;align=center;verticalAlign=middle;dashed=0;whiteSpace=wrap;" vertex="1" parent="24UresPQj2qS1IkEaMge-37">
+          <mxGeometry x="70" y="340" width="590" height="30" as="geometry" />
         </mxCell>
         <mxCell id="24UresPQj2qS1IkEaMge-45" value="&lt;font style=&quot;font-size: 11px;&quot;&gt;base.html&lt;/font&gt;&lt;div style=&quot;line-height: 100%; font-size: 11px;&quot;&gt;&lt;font style=&quot;font-size: 11px;&quot;&gt;dash sever 호출&lt;/font&gt;&lt;/div&gt;" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=strokeColor;align=left;verticalAlign=top;spacingLeft=10;" vertex="1" parent="1">
           <mxGeometry x="420" y="350" width="5" height="40" as="geometry" />
